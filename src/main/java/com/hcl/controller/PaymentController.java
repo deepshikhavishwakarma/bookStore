@@ -43,7 +43,7 @@ public class PaymentController {
 	private Long getCurrentUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
-			logger.debug("User ID from CustomUserDetails: {}",
+		logger.debug("User ID from CustomUserDetails: {}",
 					((CustomUserDetails) authentication.getPrincipal()).getId()); // Added
 
 			return ((CustomUserDetails) authentication.getPrincipal()).getId();
