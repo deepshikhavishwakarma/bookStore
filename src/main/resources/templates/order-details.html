@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .order-details-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 700px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .order-info p {
+            margin-bottom: 10px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .order-info strong {
+            font-weight: bold;
+        }
+        .items-heading {
+            margin-top: 30px;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .items-list {
+            list-style: none;
+            padding: 0;
+        }
+        .items-list li {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .items-list li:last-child {
+            border-bottom: none;
+        }
+        .item-details {
+            flex-grow: 1;
+        }
+        .item-details span {
+            display: block;
+            color: #555;
+        }
+        .item-quantity {
+            width: 80px;
+            text-align: right;
+            color: #555;
+        }
+        .item-price {
+            width: 100px;
+            text-align: right;
+            font-weight: bold;
+            color: #333;
+        }
+        .total-price {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        .actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .actions a {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .actions a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="order-details-container">
+        <h1>Order Details</h1>
+
+        <div th:if="${orders}">
+            <div th:each="order : ${orders}" style="margin-bottom: 40px;">
+                <div class="order-info">
+                    <p><strong>Order ID:</strong> <span th:text="${order.id}"></span></p>
+                    <p><strong>Order Date:</strong> <span th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></span></p>
+                    <p><strong>Payment Date:</strong> <span th:text="${#temporals.format(order.paymentDate, 'dd-MM-yyyy')}"></span></p>
+                    <p><strong>Order Status:</strong> <span th:text="${order.status}"></span></p>
+                  
+                </div>
+
+                <h2 class="items-heading">Order Items:</h2>
+                <ul class="items-list">
+                    <li th:each="item : ${order.items}">
+                        <div class="item-details">
+                            <span th:text="${item.bookName}"></span>
+                            <span th:if="${item.book != null}" th:text="'Author: ' + ${item.book.authorName != null ? item.book.authorName : 'Unknown'}"></span>
+                            <span th:if="${item.book == null}" th:text="'Author: Unknown'"></span> 
+                        </div>
+                        <span class="item-quantity" th:text="'Qty: ' + ${item.quantity}"></span>
+                        <span class="item-price">$<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></span>
+                    </li>
+                </ul>
+
+                <p class="total-price">
+                    <strong>Total:</strong> $<span th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2)}"></span>
+                </p>
+
+                
+            </div>
+        </div>
+
+    </div>
+    <div th:unless="${orders}">
+            <p>No orders found.</p>
+            <div class="actions">
+                <a th:href="@{/}">Go to Home</a>
+            </div>
+        </div>
+</body>
+</html>

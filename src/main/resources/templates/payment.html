@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Payment</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 30px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        input {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Payment Information</h1>
+    <form th:action="@{/order/place}" method="post" id="paymentForm">
+        <div>
+            <label>Card Number:</label>
+            <input type="text" name="cardNumber" required/>
+        </div>
+        <div>
+            <label>Expiry Date:</label>
+            <input type="text" name="expiryDate" placeholder="MM/YY" required/>
+        </div>
+        <div>
+            <label>CVV:</label>
+            <input type="number" name="cvv" required/>
+        </div>
+        <div>
+            <label>Payment Date:</label>
+            <input type="text" name="paymentDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" readonly/>
+        </div>
+        <div>
+            <label>Total Price:</label>
+            <input type="text" th:value="${totalPrice}" readonly/>
+        </div>
+        <button type="submit" id="placeOrderButton">Place Order</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentForm = document.getElementById('paymentForm');
+        const placeOrderButton = document.getElementById('placeOrderButton');
+
+        paymentForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            fetch('/cart/clear-frontend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any necessary security headers (e.g., CSRF token if enabled)
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Cart cleared:', data);
+                // Now, submit the actual order placement form
+                paymentForm.submit();
+            })
+            .catch(error => {
+                console.error('Error clearing cart:', error);
+                // Even if clearing fails, you might still want to attempt to place the order
+                paymentForm.submit();
+            });
+        });
+    });
+</script>
+</body>
+</html>

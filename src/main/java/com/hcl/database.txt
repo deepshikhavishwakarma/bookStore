@@ -1,0 +1,5 @@
+
+//create database
+CREATE SCHEMA `bookstore_eshopping` ;
+
+//create table

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Update Book</title>
+</head>
+<body>
+    <div sec:authorize="hasRole('ADMIN')">
+        <h1>Update Book</h1>
+        <form th:action="@{/books/save}" th:object="${book}" method="post">
+            <input type="hidden" th:field="*{bookId}"/>
+            <div>
+                <label for="bookName">Book Name:</label>
+                <input type="text" id="bookName" th:field="*{bookName}" required="required"/>
+            </div>
+            <div>
+                <label for="authorName">Author Name:</label>
+                <input type="text" id="authorName" th:field="*{authorName}" required="required"/>
+            </div>
+            <div>
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" th:field="*{quantity}" required="required"/>
+            </div>
+            <div>
+                <label for="price">Price:</label>
+                <input type="number" step="0.01" id="price" th:field="*{price}" required="required"/>
+            </div>
+            <button type="submit">Update Book</button>
+        </form>
+        <p><a th:href="@{/books}">Back to Book List</a></p>
+    </div>
+    <div sec:authorize="!hasRole('ADMIN')">
+        <h2>Access Denied</h2>
+        <p>You do not have the necessary permissions to update books.</p>
+        <p><a th:href="@{/books}">Back to Book List</a></p>
+    </div>
+</body>
+</html>
