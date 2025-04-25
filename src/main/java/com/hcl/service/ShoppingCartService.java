@@ -10,7 +10,6 @@ public interface ShoppingCartService {
     void removeItem(Long userId, Long itemId);
     void clearCart(Long userId);
     double getTotalPrice(Long userId);
-    //void restoreItems(Long userId, List<CartItem> items);
-    void clearCartAfterPayment(Long userId, Long orderId); // Add this line
+    void clearCartAfterPayment(Long userId, Long orderId); 
 
 }

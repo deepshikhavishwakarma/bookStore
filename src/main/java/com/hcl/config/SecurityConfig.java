@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .accessDeniedPage("/access-denied")
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/test/**") // ✅ Ignore CSRF for your API testing endpoints
+                        .ignoringRequestMatchers("/api/test/**") 
                 );
 
         return http.build();

@@ -1,5 +1,6 @@
 package com.hcl.exception;
 
+@SuppressWarnings("serial")
 public class EmptyCartException extends RuntimeException {
     public EmptyCartException(String message) {
         super(message);
