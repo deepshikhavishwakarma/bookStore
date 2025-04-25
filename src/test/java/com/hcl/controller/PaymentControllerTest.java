@@ -33,6 +33,6 @@ public class PaymentControllerTest {
 	    public void testShowPaymentPage_UnauthenticatedUser() throws Exception {
 	        // Act and Assert
 	        mockMvc.perform(get("/payment"))
-	               .andExpect(status().isUnauthorized()); // Expect 401 because getCurrentUserId throws an exception
+	               .andExpect(status().isUnauthorized()); 
 	    }
 }

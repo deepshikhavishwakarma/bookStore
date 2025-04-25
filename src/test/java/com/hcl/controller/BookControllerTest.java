@@ -27,31 +27,31 @@ public class BookControllerTest {
     @Test
     @WithMockUser
     void listBooks_shouldReturnBookListAndBookListView() throws Exception {
-        // ... (rest of your test method)
+      
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void showNewBookForm_shouldReturnNewBookFormView() throws Exception {
-        // ... (rest of your test method)
+       
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void showNewBookForm_asUser_shouldBeForbidden() throws Exception {
-        // ... (rest of your test method)
+      
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void saveBook_shouldSaveBookAndRedirectToList() throws Exception {
-        // ... (rest of your test method)
+      
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void saveBook_asUser_shouldBeForbidden() throws Exception {
-        // ... (rest of your test method)
+       
     }
 
     @Test
@@ -80,42 +80,42 @@ public class BookControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     void showFormForUpdate_asUser_shouldBeForbidden() throws Exception {
-        // ... (rest of your test method)
+    
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateBook_shouldUpdateBookAndRedirectToList() throws Exception {
-        // ... (rest of your test method)
+       
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void updateBook_asUser_shouldBeForbidden() throws Exception {
-        // ... (rest of your test method)
+       
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void deleteBook_shouldDeleteBookAndRedirectToList() throws Exception {
-        // ... (rest of your test method)
+        
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void deleteBook_asUser_shouldBeForbidden() throws Exception {
-        // ... (rest of your test method)
+      
     }
 
     @Test
     @WithMockUser
     void searchBooks_shouldReturnSearchResultsAndBookListView() throws Exception {
-        // ... (rest of your test method)
+      
     }
 
     @Test
     @WithMockUser
     void searchBooks_emptyKeyword_shouldReturnAllBooks() throws Exception {
-        // ... (rest of your test method)
+       
     }
 }

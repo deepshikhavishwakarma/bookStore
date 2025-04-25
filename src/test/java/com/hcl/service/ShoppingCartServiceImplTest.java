@@ -29,402 +29,369 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ShoppingCartServiceImplTest {
 
-    @Mock
-    private CartItemRepository cartItemRepository;
+	@Mock
+	private CartItemRepository cartItemRepository;
 
-    @Mock
-    private BookRepository bookRepository;
+	@Mock
+	private BookRepository bookRepository;
 
-    @Mock
-    private UserRepository userRepository;
+	@Mock
+	private UserRepository userRepository;
 
-    @InjectMocks
-    private ShoppingCartServiceImpl shoppingCartService;
+	@InjectMocks
+	private ShoppingCartServiceImpl shoppingCartService;
 
-    @Test
-    void getCartItems_existingUserId_returnsListOfCartItems() {
-        // Given
-        Long userId = 1L;
-        User user = new User();
-        user.setId(userId);
-        Book book1 = new Book();
-        book1.setBookId(10L);
-        Book book2 = new Book();
-        book2.setBookId(20L);
+	@Test
+	void getCartItems_existingUserId_returnsListOfCartItems() {
+		// Given
+		Long userId = 1L;
+		User user = new User();
+		user.setId(userId);
+		Book book1 = new Book();
+		book1.setBookId(10L);
+		Book book2 = new Book();
+		book2.setBookId(20L);
 
-        CartItem cartItem1 = new CartItem();
-        cartItem1.setId(1L);
-        cartItem1.setQuantity(2);
-        cartItem1.setBook(book1);
-        cartItem1.setUser(user);
+		CartItem cartItem1 = new CartItem();
+		cartItem1.setId(1L);
+		cartItem1.setQuantity(2);
+		cartItem1.setBook(book1);
+		cartItem1.setUser(user);
 
-        CartItem cartItem2 = new CartItem();
-        cartItem2.setId(2L);
-        cartItem2.setQuantity(1);
-        cartItem2.setBook(book2);
-        cartItem2.setUser(user);
+		CartItem cartItem2 = new CartItem();
+		cartItem2.setId(2L);
+		cartItem2.setQuantity(1);
+		cartItem2.setBook(book2);
+		cartItem2.setUser(user);
 
-        List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
-        when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
+		List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
+		when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
 
-        // When
-        List<CartItem> result = shoppingCartService.getCartItems(userId);
+		// When
+		List<CartItem> result = shoppingCartService.getCartItems(userId);
 
-        // Then
-        assertEquals(2, result.size());
-        assertEquals(10L, result.get(0).getBook().getBookId());
-        assertEquals(20L, result.get(1).getBook().getBookId());
-        verify(cartItemRepository, times(1)).findByUser_id(userId);
-    }
+		// Then
+		assertEquals(2, result.size());
+		assertEquals(10L, result.get(0).getBook().getBookId());
+		assertEquals(20L, result.get(1).getBook().getBookId());
+		verify(cartItemRepository, times(1)).findByUser_id(userId);
+	}
 
-    @Test
-    void getCartItems_nonExistingUserId_returnsEmptyList() {
-        // Given
-        Long userId = 1L;
-        when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
+	@Test
+	void getCartItems_nonExistingUserId_returnsEmptyList() {
+		// Given
+		Long userId = 1L;
+		when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
 
-        // When
-        List<CartItem> result = shoppingCartService.getCartItems(userId);
+		// When
+		List<CartItem> result = shoppingCartService.getCartItems(userId);
 
-        // Then
-        assertTrue(result.isEmpty());
-        verify(cartItemRepository, times(1)).findByUser_id(userId);
-    }
+		// Then
+		assertTrue(result.isEmpty());
+		verify(cartItemRepository, times(1)).findByUser_id(userId);
+	}
 
-    @Test
-    void addItem_existingUserAndBook_createsNewCartItem() {
-        // Given
-        Long userId = 1L;
-        Long bookId = 10L;
-        int quantity = 3;
-        User user = new User();
-        user.setId(userId);
-        Book book = new Book("Test Book", "Author", 5, 10.0);
-        book.setBookId(bookId);
+	@Test
+	void addItem_existingUserAndBook_createsNewCartItem() {
+		// Given
+		Long userId = 1L;
+		Long bookId = 10L;
+		int quantity = 3;
+		User user = new User();
+		user.setId(userId);
+		Book book = new Book("Test Book", "Author", 5, 10.0);
+		book.setBookId(bookId);
 
-        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(cartItemRepository.findByUser_idAndBook_BookId(userId, bookId)).thenReturn(Optional.empty());
-        when(cartItemRepository.save(any(CartItem.class))).thenReturn(new CartItem());
+		when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+		when(cartItemRepository.findByUser_idAndBook_BookId(userId, bookId)).thenReturn(Optional.empty());
+		when(cartItemRepository.save(any(CartItem.class))).thenReturn(new CartItem());
 
-        // When
-        shoppingCartService.addItem(userId, bookId, quantity);
+		// When
+		shoppingCartService.addItem(userId, bookId, quantity);
 
-        // Then
-        assertEquals(2, book.getQuantity()); // Stock reduced
-        verify(cartItemRepository, times(1)).save(any(CartItem.class));
-        verify(bookRepository, times(1)).save(book);
-    }
+		// Then
+		assertEquals(2, book.getQuantity()); // Stock reduced
+		verify(cartItemRepository, times(1)).save(any(CartItem.class));
+		verify(bookRepository, times(1)).save(book);
+	}
 
-   /* @Test
-    void addItem_existingUserAndBook_updatesExistingCartItem() {
-        // Given
-        Long userId = 1L;
-        Long bookId = 10L;
-        int quantityToAdd = 2;
-        User user = new User();
-        user.setId(userId);
-        Book book = new Book("Test Book", "Author", 5, 10.0);
-        book.setBookId(bookId);
-        CartItem existingItem = new CartItem();
-        existingItem.setId(1L);
-        existingItem.setQuantity(1);
-        existingItem.setBook(book);
-        existingItem.setUser(user);
+	@Test
+	void addItem_nonExistingBook_throwsBookNotFoundException() {
+		// Given
+		Long userId = 1L;
+		Long bookId = 10L;
+		int quantity = 2;
+		when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
-        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(cartItemRepository.findByUser_idAndBook_BookId(userId, bookId)).thenReturn(Optional.of(existingItem));
-        when(cartItemRepository.save(existingItem)).thenReturn(existingItem);
+		// When, Then
+		assertThrows(BookNotFoundException.class, () -> shoppingCartService.addItem(userId, bookId, quantity));
+		verify(cartItemRepository, never()).save(any());
+		verify(bookRepository, never()).save(any());
+	}
 
-        // When
-        shoppingCartService.addItem(userId, bookId, quantityToAdd);
+	@Test
+	void addItem_insufficientStock_throwsInsufficientStockException() {
+		// Given
+		Long userId = 1L;
+		Long bookId = 10L;
+		int quantityToAdd = 6;
+		Book book = new Book("Test Book", "Author", 5, 10.0);
+		book.setBookId(bookId);
+		when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
 
-        // Then
-        assertEquals(3, existingItem.getQuantity());
-        assertEquals(3, book.getQuantity()); // Stock reduced
-        verify(cartItemRepository, times(1)).save(existingItem);
-        verify(bookRepository, times(1)).save(book);
-    }*/
+		// When, Then
+		assertThrows(InsufficientStockException.class,
+				() -> shoppingCartService.addItem(userId, bookId, quantityToAdd));
+		verify(cartItemRepository, never()).save(any());
+		verify(bookRepository, never()).save(any());
+	}
 
-    @Test
-    void addItem_nonExistingBook_throwsBookNotFoundException() {
-        // Given
-        Long userId = 1L;
-        Long bookId = 10L;
-        int quantity = 2;
-        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+	@Test
+	void updateItemQuantity_existingItemAndCorrectUser_updatesQuantityAndSaves() {
+		// Given
+		Long userId = 1L;
+		Long itemId = 2L;
+		int newQuantity = 5;
+		User user = new User();
+		user.setId(userId);
+		Book book = new Book("Test Book", "Author", 10, 10.0);
+		book.setBookId(10L);
+		CartItem existingItem = new CartItem();
+		existingItem.setId(itemId);
+		existingItem.setQuantity(2);
+		existingItem.setBook(book);
+		existingItem.setUser(user);
 
-        // When, Then
-        assertThrows(BookNotFoundException.class, () -> shoppingCartService.addItem(userId, bookId, quantity));
-        verify(cartItemRepository, never()).save(any());
-        verify(bookRepository, never()).save(any());
-    }
+		when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
+		when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
+		when(cartItemRepository.save(existingItem)).thenReturn(existingItem);
 
-    @Test
-    void addItem_insufficientStock_throwsInsufficientStockException() {
-        // Given
-        Long userId = 1L;
-        Long bookId = 10L;
-        int quantityToAdd = 6;
-        Book book = new Book("Test Book", "Author", 5, 10.0);
-        book.setBookId(bookId);
-        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+		// When
+		shoppingCartService.updateItemQuantity(userId, itemId, newQuantity);
 
-        // When, Then
-        assertThrows(InsufficientStockException.class, () -> shoppingCartService.addItem(userId, bookId, quantityToAdd));
-        verify(cartItemRepository, never()).save(any());
-        verify(bookRepository, never()).save(any());
-    }
+		// Then
+		assertEquals(newQuantity, existingItem.getQuantity());
+		assertEquals(7, book.getQuantity()); // Stock updated
+		verify(cartItemRepository, times(1)).save(existingItem);
+		verify(bookRepository, times(1)).save(book);
+	}
 
-    @Test
-    void updateItemQuantity_existingItemAndCorrectUser_updatesQuantityAndSaves() {
-        // Given
-        Long userId = 1L;
-        Long itemId = 2L;
-        int newQuantity = 5;
-        User user = new User();
-        user.setId(userId);
-        Book book = new Book("Test Book", "Author", 10, 10.0);
-        book.setBookId(10L);
-        CartItem existingItem = new CartItem();
-        existingItem.setId(itemId);
-        existingItem.setQuantity(2);
-        existingItem.setBook(book);
-        existingItem.setUser(user);
+	@Test
+	void updateItemQuantity_nonExistingItem_throwsCartItemNotFoundException() {
+		// Given
+		Long userId = 1L;
+		Long itemId = 2L;
+		int newQuantity = 5;
+		when(cartItemRepository.findById(itemId)).thenReturn(Optional.empty());
 
-        when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
-        when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
-        when(cartItemRepository.save(existingItem)).thenReturn(existingItem);
+		// When, Then
+		assertThrows(CartItemNotFoundException.class,
+				() -> shoppingCartService.updateItemQuantity(userId, itemId, newQuantity));
+		verify(cartItemRepository, never()).save(any());
+		verify(bookRepository, never()).save(any());
+	}
 
-        // When
-        shoppingCartService.updateItemQuantity(userId, itemId, newQuantity);
+	@Test
+	void updateItemQuantity_wrongUserForItem_throwsSecurityException() {
+		// Given
+		Long userId = 1L;
+		Long itemId = 2L;
+		int newQuantity = 5;
+		User user1 = new User();
+		user1.setId(1L);
+		User user2 = new User();
+		user2.setId(2L);
+		Book book = new Book();
+		book.setBookId(10L);
+		CartItem existingItem = new CartItem();
+		existingItem.setId(itemId);
+		existingItem.setQuantity(2);
+		existingItem.setBook(book);
+		existingItem.setUser(user2);
 
-        // Then
-        assertEquals(newQuantity, existingItem.getQuantity());
-        assertEquals(7, book.getQuantity()); // Stock updated
-        verify(cartItemRepository, times(1)).save(existingItem);
-        verify(bookRepository, times(1)).save(book);
-    }
+		when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
 
-    @Test
-    void updateItemQuantity_nonExistingItem_throwsCartItemNotFoundException() {
-        // Given
-        Long userId = 1L;
-        Long itemId = 2L;
-        int newQuantity = 5;
-        when(cartItemRepository.findById(itemId)).thenReturn(Optional.empty());
+		// When, Then
+		assertThrows(SecurityException.class,
+				() -> shoppingCartService.updateItemQuantity(userId, itemId, newQuantity));
+		verify(cartItemRepository, never()).save(any());
+		verify(bookRepository, never()).save(any());
+	}
 
-        // When, Then
-        assertThrows(CartItemNotFoundException.class, () -> shoppingCartService.updateItemQuantity(userId, itemId, newQuantity));
-        verify(cartItemRepository, never()).save(any());
-        verify(bookRepository, never()).save(any());
-    }
+	@Test
+	void updateItemQuantity_insufficientStock_throwsInsufficientStockException() {
+		// Given
+		Long userId = 1L;
+		Long itemId = 2L;
+		int newQuantity = 15;
+		User user = new User();
+		user.setId(userId);
+		Book book = new Book("Test Book", "Author", 10, 10.0);
+		book.setBookId(10L);
+		CartItem existingItem = new CartItem();
+		existingItem.setId(itemId);
+		existingItem.setQuantity(2);
+		existingItem.setBook(book);
+		existingItem.setUser(user);
 
-    @Test
-    void updateItemQuantity_wrongUserForItem_throwsSecurityException() {
-        // Given
-        Long userId = 1L;
-        Long itemId = 2L;
-        int newQuantity = 5;
-        User user1 = new User();
-        user1.setId(1L);
-        User user2 = new User();
-        user2.setId(2L);
-        Book book = new Book();
-        book.setBookId(10L);
-        CartItem existingItem = new CartItem();
-        existingItem.setId(itemId);
-        existingItem.setQuantity(2);
-        existingItem.setBook(book);
-        existingItem.setUser(user2);
+		when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
+		when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
 
-        when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
+		// When, Then
+		assertThrows(InsufficientStockException.class,
+				() -> shoppingCartService.updateItemQuantity(userId, itemId, newQuantity));
+		verify(cartItemRepository, never()).save(any());
+		verify(bookRepository, never()).save(any());
+	}
 
-        // When, Then
-        assertThrows(SecurityException.class, () -> shoppingCartService.updateItemQuantity(userId, itemId, newQuantity));
-        verify(cartItemRepository, never()).save(any());
-        verify(bookRepository, never()).save(any());
-    }
+	@Test
+	void removeItem_existingItemAndCorrectUser_deletesItemAndUpdatesStock() {
+		// Given
+		Long userId = 1L;
+		Long itemId = 2L;
+		User user = new User();
+		user.setId(userId);
+		Book book = new Book("Test Book", "Author", 5, 10.0);
+		book.setBookId(10L);
+		CartItem existingItem = new CartItem();
+		existingItem.setId(itemId);
+		existingItem.setQuantity(2);
+		existingItem.setBook(book);
+		existingItem.setUser(user);
 
-    @Test
-    void updateItemQuantity_insufficientStock_throwsInsufficientStockException() {
-        // Given
-        Long userId = 1L;
-        Long itemId = 2L;
-        int newQuantity = 15;
-        User user = new User();
-        user.setId(userId);
-        Book book = new Book("Test Book", "Author", 10, 10.0);
-        book.setBookId(10L);
-        CartItem existingItem = new CartItem();
-        existingItem.setId(itemId);
-        existingItem.setQuantity(2);
-        existingItem.setBook(book);
-        existingItem.setUser(user);
+		when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
 
-        when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
-        when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
+		// When
+		shoppingCartService.removeItem(userId, itemId);
 
-        // When, Then
-        assertThrows(InsufficientStockException.class, () -> shoppingCartService.updateItemQuantity(userId, itemId, newQuantity));
-        verify(cartItemRepository, never()).save(any());
-        verify(bookRepository, never()).save(any());
-    }
+		// Then
+		assertEquals(7, book.getQuantity()); // Stock increased
+		verify(cartItemRepository, times(1)).deleteById(itemId);
+		verify(bookRepository, times(1)).save(book);
+	}
 
-    @Test
-    void removeItem_existingItemAndCorrectUser_deletesItemAndUpdatesStock() {
-        // Given
-        Long userId = 1L;
-        Long itemId = 2L;
-        User user = new User();
-        user.setId(userId);
-        Book book = new Book("Test Book", "Author", 5, 10.0);
-        book.setBookId(10L);
-        CartItem existingItem = new CartItem();
-        existingItem.setId(itemId);
-        existingItem.setQuantity(2);
-        existingItem.setBook(book);
-        existingItem.setUser(user);
+	@Test
+	void removeItem_nonExistingItem_throwsCartItemNotFoundException() {
+		// Given
+		Long userId = 1L;
+		Long itemId = 2L;
+		when(cartItemRepository.findById(itemId)).thenReturn(Optional.empty());
 
-        when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
+		// When, Then
+		assertThrows(CartItemNotFoundException.class, () -> shoppingCartService.removeItem(userId, itemId));
+		verify(cartItemRepository, never()).deleteById(anyLong());
+		verify(bookRepository, never()).save(any());
+	}
 
-        // When
-        shoppingCartService.removeItem(userId, itemId);
+	@Test
+	void removeItem_wrongUserForItem_throwsSecurityException() {
+		// Given
+		Long userId = 1L;
+		Long itemId = 2L;
+		User user1 = new User();
+		user1.setId(1L);
+		User user2 = new User();
+		user2.setId(2L);
+		Book book = new Book();
+		book.setBookId(10L);
+		CartItem existingItem = new CartItem();
+		existingItem.setId(itemId);
+		existingItem.setQuantity(2);
+		existingItem.setBook(book);
+		existingItem.setUser(user2);
 
-        // Then
-        assertEquals(7, book.getQuantity()); // Stock increased
-        verify(cartItemRepository, times(1)).deleteById(itemId);
-        verify(bookRepository, times(1)).save(book);
-    }
+		when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
 
-    @Test
-    void removeItem_nonExistingItem_throwsCartItemNotFoundException() {
-        // Given
-        Long userId = 1L;
-        Long itemId = 2L;
-        when(cartItemRepository.findById(itemId)).thenReturn(Optional.empty());
+		// When, Then
+		assertThrows(SecurityException.class, () -> shoppingCartService.removeItem(userId, itemId));
+		verify(cartItemRepository, never()).deleteById(anyLong());
+		verify(bookRepository, never()).save(any());
+	}
 
-        // When, Then
-        assertThrows(CartItemNotFoundException.class, () -> shoppingCartService.removeItem(userId, itemId));
-        verify(cartItemRepository, never()).deleteById(anyLong());
-        verify(bookRepository, never()).save(any());
-    }
+	@Test
+	void clearCart_existingUserId_deletesAllItemsForUserAndUpdateStock() {
+		// Given
+		Long userId = 1L;
+		User user = new User();
+		user.setId(userId);
+		Book book1 = new Book("Book 1", "Author", 5, 10.0);
+		book1.setBookId(10L);
+		Book book2 = new Book("Book 2", "Author", 3, 20.0);
+		book2.setBookId(20L);
 
-    @Test
-    void removeItem_wrongUserForItem_throwsSecurityException() {
-        // Given
-        Long userId = 1L;
-        Long itemId = 2L;
-        User user1 = new User();
-        user1.setId(1L);
-        User user2 = new User();
-        user2.setId(2L);
-        Book book = new Book();
-        book.setBookId(10L);
-        CartItem existingItem = new CartItem();
-        existingItem.setId(itemId);
-        existingItem.setQuantity(2);
-        existingItem.setBook(book);
-        existingItem.setUser(user2);
+		CartItem cartItem1 = new CartItem();
+		cartItem1.setId(1L);
+		cartItem1.setQuantity(2);
+		cartItem1.setBook(book1);
+		cartItem1.setUser(user);
 
-        when(cartItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
+		CartItem cartItem2 = new CartItem();
+		cartItem2.setId(2L);
+		cartItem2.setQuantity(1);
+		cartItem2.setBook(book2);
+		cartItem2.setUser(user);
 
-        // When, Then
-        assertThrows(SecurityException.class, () -> shoppingCartService.removeItem(userId, itemId));
-        verify(cartItemRepository, never()).deleteById(anyLong());
-        verify(bookRepository, never()).save(any());
-    }
+		List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
+		when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
+		when(bookRepository.save(book1)).thenReturn(book1);
+		when(bookRepository.save(book2)).thenReturn(book2);
 
-    @Test
-    void clearCart_existingUserId_deletesAllItemsForUserAndUpdateStock() {
-        // Given
-        Long userId = 1L;
-        User user = new User();
-        user.setId(userId);
-        Book book1 = new Book("Book 1", "Author", 5, 10.0);
-        book1.setBookId(10L);
-        Book book2 = new Book("Book 2", "Author", 3, 20.0);
-        book2.setBookId(20L);
+		// When
+		shoppingCartService.clearCart(userId);
 
-        CartItem cartItem1 = new CartItem();
-        cartItem1.setId(1L);
-        cartItem1.setQuantity(2);
-        cartItem1.setBook(book1);
-        cartItem1.setUser(user);
+		// Then
+		assertEquals(7, book1.getQuantity()); // Stock restored
+		assertEquals(4, book2.getQuantity()); // Stock restored
+		verify(cartItemRepository, times(1)).deleteByUser_id(userId);
+		verify(bookRepository, times(2)).save(any(Book.class));
+	}
 
-        CartItem cartItem2 = new CartItem();
-        cartItem2.setId(2L);
-        cartItem2.setQuantity(1);
-        cartItem2.setBook(book2);
-        cartItem2.setUser(user);
+	@Test
+	void clearCart_nonExistingUserId_doesNothing() {
+		// Given
+		Long userId = 1L;
+		when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
 
-        List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
-        when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
-        when(bookRepository.save(book1)).thenReturn(book1);
-        when(bookRepository.save(book2)).thenReturn(book2);
+		// When
+		shoppingCartService.clearCart(userId);
 
-        // When
-        shoppingCartService.clearCart(userId);
+		// Then
+		verify(cartItemRepository, times(1)).deleteByUser_id(userId);
+		verify(bookRepository, never()).save(any());
+	}
 
-        // Then
-        assertEquals(7, book1.getQuantity()); // Stock restored
-        assertEquals(4, book2.getQuantity()); // Stock restored
-        verify(cartItemRepository, times(1)).deleteByUser_id(userId);
-        verify(bookRepository, times(2)).save(any(Book.class));
-    }
+	@Test
+	void clearCartAfterPayment_existingUserId_deletesAllItemsForUser() {
+		// Given
+		Long userId = 1L;
+		User user = new User();
+		user.setId(userId);
+		Book book1 = new Book();
+		book1.setBookId(10L);
+		Book book2 = new Book();
+		book2.setBookId(20L);
 
-    @Test
-    void clearCart_nonExistingUserId_doesNothing() {
-        // Given
-        Long userId = 1L;
-        when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
+		CartItem cartItem1 = new CartItem();
+		cartItem1.setId(1L);
+		cartItem1.setQuantity(2);
+		cartItem1.setBook(book1);
+		cartItem1.setUser(user);
 
-        // When
-        shoppingCartService.clearCart(userId);
+		CartItem cartItem2 = new CartItem();
+		cartItem2.setId(2L);
+		cartItem2.setQuantity(1);
+		cartItem2.setBook(book2);
+		cartItem2.setUser(user);
 
-        // Then
-        verify(cartItemRepository, times(1)).deleteByUser_id(userId);
-        verify(bookRepository, never()).save(any());
-    }
+		List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
+		when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
 
-    @Test
-    void clearCartAfterPayment_existingUserId_deletesAllItemsForUser() {
-        // Given
-        Long userId = 1L;
-        User user = new User();
-        user.setId(userId);
-        Book book1 = new Book();
-        book1.setBookId(10L);
-        Book book2 = new Book();
-        book2.setBookId(20L);
+		// When
+		shoppingCartService.clearCartAfterPayment(userId, 123L);
 
-        CartItem cartItem1 = new CartItem();
-        cartItem1.setId(1L);
-        cartItem1.setQuantity(2);
-        cartItem1.setBook(book1);
-        cartItem1.setUser(user);
+		// Then
+		verify(cartItemRepository, times(1)).deleteAll(cartItems);
+	}
 
-        CartItem cartItem2 = new CartItem();
-        cartItem2.setId(2L);
-        cartItem2.setQuantity(1);
-        cartItem2.setBook(book2);
-        cartItem2.setUser(user);
-
-        List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
-        when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
-
-        // When
-        shoppingCartService.clearCartAfterPayment(userId, 123L);
-
-        // Then
-        verify(cartItemRepository, times(1)).deleteAll(cartItems);
-    }
-
-   // @Test
-    //void clearCartAfterPayment_nonExistingUserId_doesNothing() {
-        // Given
-      //  Long userId = 1L;
-        //when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
-
-    }
+}

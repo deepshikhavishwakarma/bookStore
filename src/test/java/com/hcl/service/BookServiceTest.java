@@ -15,57 +15,53 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
-    @Mock
-    private BookService bookService; // Mocking the interface
+	@Mock
+	private BookService bookService; // Mocking the interface
 
-    @Test
-    void getAllBooks_shouldReturnListOfBooks() {
-        // Arrange
-        Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
-        Book book2 = new Book("To Kill a Mockingbird", "Harper Lee", 5, 12.50);
-        List<Book> expectedBooks = Arrays.asList(book1, book2);
-        when(bookService.getAllBooks()).thenReturn(expectedBooks);
+	@Test
+	void getAllBooks_shouldReturnListOfBooks() {
 
-        // Act
-        List<Book> actualBooks = bookService.getAllBooks();
+		Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
+		Book book2 = new Book("To Kill a Mockingbird", "Harper Lee", 5, 12.50);
+		List<Book> expectedBooks = Arrays.asList(book1, book2);
+		when(bookService.getAllBooks()).thenReturn(expectedBooks);
 
-        // Assert
-        assertEquals(expectedBooks.size(), actualBooks.size());
-        assertEquals(expectedBooks, actualBooks);
-    }
+		// Act
+		List<Book> actualBooks = bookService.getAllBooks();
 
-    @Test
-    void getBookById_shouldReturnBook_whenIdExists() {
-        // Arrange
-        Long bookId = 1L;
-        Book expectedBook = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
-        when(bookService.getBookById(bookId)).thenReturn(expectedBook);
+		// Assert
+		assertEquals(expectedBooks.size(), actualBooks.size());
+		assertEquals(expectedBooks, actualBooks);
+	}
 
-        // Act
-        Book actualBook = bookService.getBookById(bookId);
+	@Test
+	void getBookById_shouldReturnBook_whenIdExists() {
 
-        // Assert
-        assertEquals(expectedBook, actualBook);
-    }
+		Long bookId = 1L;
+		Book expectedBook = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
+		when(bookService.getBookById(bookId)).thenReturn(expectedBook);
 
-    @Test
-    void searchBooks_shouldReturnListOfMatchingBooks() {
-        // Arrange
-        String keyword = "great";
-        Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
-        List<Book> expectedBooks = Arrays.asList(book1);
-        when(bookService.searchBooks(keyword)).thenReturn(expectedBooks);
+		// Act
+		Book actualBook = bookService.getBookById(bookId);
 
-        // Act
-        List<Book> actualBooks = bookService.searchBooks(keyword);
+		// Assert
+		assertEquals(expectedBook, actualBook);
+	}
 
-        // Assert
-        assertEquals(expectedBooks.size(), actualBooks.size());
-        assertEquals(expectedBooks, actualBooks);
-    }
+	@Test
+	void searchBooks_shouldReturnListOfMatchingBooks() {
 
-    // You would typically not test void methods of an interface directly
-    // Instead, you test the implementation of this interface to ensure
-    // that the saveBook and deleteBookById methods behave as expected
-    // (e.g., by verifying interactions with a repository mock).
+		String keyword = "great";
+		Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
+		List<Book> expectedBooks = Arrays.asList(book1);
+		when(bookService.searchBooks(keyword)).thenReturn(expectedBooks);
+
+		// Act
+		List<Book> actualBooks = bookService.searchBooks(keyword);
+
+		// Assert
+		assertEquals(expectedBooks.size(), actualBooks.size());
+		assertEquals(expectedBooks, actualBooks);
+	}
+
 }
