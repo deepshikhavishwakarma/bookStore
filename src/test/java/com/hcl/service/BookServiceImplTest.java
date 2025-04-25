@@ -20,158 +20,157 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class BookServiceImplTest {
 
-    @Mock
-    private BookRepository bookRepository;
+	@Mock
+	private BookRepository bookRepository;
 
-    @Mock
-    private CartItemRepository cartItemRepository;
+	@Mock
+	private CartItemRepository cartItemRepository;
 
-    @InjectMocks
-    private BookServiceImpl bookService;
+	@InjectMocks
+	private BookServiceImpl bookService;
 
-    @Test
-    void getAllBooks_shouldReturnOnlyAvailableBooks() {
-        // Arrange
-        Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
-        Book book2 = new Book("To Kill a Mockingbird", "Harper Lee", 0, 12.50); // Quantity 0
-        Book book3 = new Book("Pride and Prejudice", "Jane Austen", 5, 11.00);
-        List<Book> allBooks = Arrays.asList(book1, book2, book3);
-        when(bookRepository.findAll()).thenReturn(allBooks);
+	@Test
+	void getAllBooks_shouldReturnOnlyAvailableBooks() {
+		Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
+		Book book2 = new Book("To Kill a Mockingbird", "Harper Lee", 0, 12.50); // Quantity 0
+		Book book3 = new Book("Pride and Prejudice", "Jane Austen", 5, 11.00);
+		List<Book> allBooks = Arrays.asList(book1, book2, book3);
+		when(bookRepository.findAll()).thenReturn(allBooks);
 
-        // Act
-        List<Book> availableBooks = bookService.getAllBooks();
+		// Act
+		List<Book> availableBooks = bookService.getAllBooks();
 
-        // Assert
-        assertEquals(2, availableBooks.size());
-        assertTrue(availableBooks.contains(book1));
-        assertFalse(availableBooks.contains(book2));
-        assertTrue(availableBooks.contains(book3));
-        verify(bookRepository, times(1)).findAll();
-    }
+		// Assert
+		assertEquals(2, availableBooks.size());
+		assertTrue(availableBooks.contains(book1));
+		assertFalse(availableBooks.contains(book2));
+		assertTrue(availableBooks.contains(book3));
+		verify(bookRepository, times(1)).findAll();
+	}
 
-    @Test
-    void saveBook_shouldCallBookRepositorySave() {
-        // Arrange
-        Book book = new Book("New Book", "Author", 5, 20.00);
+	@Test
+	void saveBook_shouldCallBookRepositorySave() {
+		Book book = new Book("New Book", "Author", 5, 20.00);
 
-        // Act
-        bookService.saveBook(book);
+		// Act
+		bookService.saveBook(book);
 
-        // Assert
-        verify(bookRepository, times(1)).save(book);
-    }
+		// Assert
+		verify(bookRepository, times(1)).save(book);
+	}
 
-    @Test
-    void getBookById_shouldReturnBook_whenIdExists() {
-        // Arrange
-        Long bookId = 1L;
-        Book book = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
-        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+	@Test
+	void getBookById_shouldReturnBook_whenIdExists() {
 
-        // Act
-        Book retrievedBook = bookService.getBookById(bookId);
+		Long bookId = 1L;
+		Book book = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
+		when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
 
-        // Assert
-        assertEquals(book, retrievedBook);
-        verify(bookRepository, times(1)).findById(bookId);
-    }
+		// Act
+		Book retrievedBook = bookService.getBookById(bookId);
 
-    @Test
-    void getBookById_shouldThrowBookNotFoundException_whenIdDoesNotExist() {
-        // Arrange
-        Long bookId = 1L;
-        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+		// Assert
+		assertEquals(book, retrievedBook);
+		verify(bookRepository, times(1)).findById(bookId);
+	}
 
-        // Act and Assert
-        assertThrows(BookNotFoundException.class, () -> bookService.getBookById(bookId));
-        verify(bookRepository, times(1)).findById(bookId);
-    }
+	@Test
+	void getBookById_shouldThrowBookNotFoundException_whenIdDoesNotExist() {
 
-    @Test
-    void deleteBookById_shouldDeleteBookAndRelatedCartItems_whenIdExists() {
-        // Arrange
-        Long bookId = 1L;
-        Book bookToDelete = new Book("ToDelete", "Author", 2, 10.00);
-        when(bookRepository.findById(bookId)).thenReturn(Optional.of(bookToDelete));
-        doNothing().when(bookRepository).deleteById(bookId);
-        doNothing().when(cartItemRepository).deleteByBook_BookId(bookId);
+		Long bookId = 1L;
+		when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
-        // Act
-        bookService.deleteBookById(bookId);
+		// Act and Assert
+		assertThrows(BookNotFoundException.class, () -> bookService.getBookById(bookId));
+		verify(bookRepository, times(1)).findById(bookId);
+	}
 
-        // Assert
-        verify(bookRepository, times(1)).findById(bookId);
-        verify(cartItemRepository, times(1)).deleteByBook_BookId(bookId);
-        verify(bookRepository, times(1)).deleteById(bookId);
-    }
+	@Test
+	void deleteBookById_shouldDeleteBookAndRelatedCartItems_whenIdExists() {
 
-    @Test
-    void deleteBookById_shouldThrowBookNotFoundException_whenIdDoesNotExist() {
-        // Arrange
-        Long bookId = 1L;
-        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+		Long bookId = 1L;
+		Book bookToDelete = new Book("ToDelete", "Author", 2, 10.00);
+		when(bookRepository.findById(bookId)).thenReturn(Optional.of(bookToDelete));
+		doNothing().when(bookRepository).deleteById(bookId);
+		doNothing().when(cartItemRepository).deleteByBook_BookId(bookId);
 
-        // Act and Assert
-        assertThrows(BookNotFoundException.class, () -> bookService.deleteBookById(bookId));
-        verify(bookRepository, times(1)).findById(bookId);
-        verify(cartItemRepository, never()).deleteByBook_BookId(anyLong());
-        verify(bookRepository, never()).deleteById(anyLong());
-    }
+		// Act
+		bookService.deleteBookById(bookId);
 
-    @Test
-    void searchBooks_shouldReturnSearchResults_whenKeywordIsProvided() {
-        // Arrange
-        String keyword = "great";
-        Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
-        Book book2 = new Book("Some Other Book", "Another Author", 5, 12.00);
-        List<Book> searchResults = Arrays.asList(book1);
-        when(bookRepository.searchBooks(keyword.toLowerCase())).thenReturn(searchResults);
+		// Assert
+		verify(bookRepository, times(1)).findById(bookId);
+		verify(cartItemRepository, times(1)).deleteByBook_BookId(bookId);
+		verify(bookRepository, times(1)).deleteById(bookId);
+	}
 
-        // Act
-        List<Book> result = bookService.searchBooks(keyword);
+	@Test
+	void deleteBookById_shouldThrowBookNotFoundException_whenIdDoesNotExist() {
 
-        // Assert
-        assertEquals(1, result.size());
-        assertTrue(result.contains(book1));
-        verify(bookRepository, times(1)).searchBooks(keyword.toLowerCase());
-        verify(bookRepository, never()).findAll();
-    }
+		Long bookId = 1L;
+		when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
-    @Test
-    void searchBooks_shouldReturnAllAvailableBooks_whenKeywordIsNull() {
-        // Arrange
-        Book book1 = new Book("Book 1", "Author 1", 2, 10.00);
-        Book book2 = new Book("Book 2", "Author 2", 5, 15.00);
-        List<Book> allAvailableBooks = Arrays.asList(book1, book2);
-        when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2, new Book("Out of Stock", "Someone", 0, 5.00)));
+		// Act and Assert
+		assertThrows(BookNotFoundException.class, () -> bookService.deleteBookById(bookId));
+		verify(bookRepository, times(1)).findById(bookId);
+		verify(cartItemRepository, never()).deleteByBook_BookId(anyLong());
+		verify(bookRepository, never()).deleteById(anyLong());
+	}
 
-        // Act
-        List<Book> result = bookService.searchBooks(null);
+	@Test
+	void searchBooks_shouldReturnSearchResults_whenKeywordIsProvided() {
 
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(book1));
-        assertTrue(result.contains(book2));
-        verify(bookRepository, never()).searchBooks(any());
-        verify(bookRepository, times(1)).findAll();
-    }
+		String keyword = "great";
+		Book book1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", 10, 15.00);
+		Book book2 = new Book("Some Other Book", "Another Author", 5, 12.00);
+		List<Book> searchResults = Arrays.asList(book1);
+		when(bookRepository.searchBooks(keyword.toLowerCase())).thenReturn(searchResults);
 
-    @Test
-    void searchBooks_shouldReturnAllAvailableBooks_whenKeywordIsBlank() {
-        // Arrange
-        Book book1 = new Book("Book A", "Writer A", 3, 8.00);
-        Book book2 = new Book("Book B", "Writer B", 7, 12.00);
-        List<Book> allAvailableBooks = Arrays.asList(book1, book2);
-        when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2, new Book("Sold Out", "Nobody", 0, 2.00)));
+		// Act
+		List<Book> result = bookService.searchBooks(keyword);
 
-        // Act
-        List<Book> result = bookService.searchBooks(" ");
+		// Assert
+		assertEquals(1, result.size());
+		assertTrue(result.contains(book1));
+		verify(bookRepository, times(1)).searchBooks(keyword.toLowerCase());
+		verify(bookRepository, never()).findAll();
+	}
 
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(book1));
-        assertTrue(result.contains(book2));
-        verify(bookRepository, never()).searchBooks(any());
-        verify(bookRepository, times(1)).findAll();
-    }
+	@Test
+	void searchBooks_shouldReturnAllAvailableBooks_whenKeywordIsNull() {
+
+		Book book1 = new Book("Book 1", "Author 1", 2, 10.00);
+		Book book2 = new Book("Book 2", "Author 2", 5, 15.00);
+		List<Book> allAvailableBooks = Arrays.asList(book1, book2);
+		when(bookRepository.findAll())
+				.thenReturn(Arrays.asList(book1, book2, new Book("Out of Stock", "Someone", 0, 5.00)));
+
+		// Act
+		List<Book> result = bookService.searchBooks(null);
+
+		// Assert
+		assertEquals(2, result.size());
+		assertTrue(result.contains(book1));
+		assertTrue(result.contains(book2));
+		verify(bookRepository, never()).searchBooks(any());
+		verify(bookRepository, times(1)).findAll();
+	}
+
+	@Test
+	void searchBooks_shouldReturnAllAvailableBooks_whenKeywordIsBlank() {
+
+		Book book1 = new Book("Book A", "Writer A", 3, 8.00);
+		Book book2 = new Book("Book B", "Writer B", 7, 12.00);
+		List<Book> allAvailableBooks = Arrays.asList(book1, book2);
+		when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2, new Book("Sold Out", "Nobody", 0, 2.00)));
+
+		// Act
+		List<Book> result = bookService.searchBooks(" ");
+
+		// Assert
+		assertEquals(2, result.size());
+		assertTrue(result.contains(book1));
+		assertTrue(result.contains(book2));
+		verify(bookRepository, never()).searchBooks(any());
+		verify(bookRepository, times(1)).findAll();
+	}
 }

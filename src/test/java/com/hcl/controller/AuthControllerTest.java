@@ -51,25 +51,7 @@ public class AuthControllerTest {
         verify(userService, times(1)).login(username, password);
     }
 
-   /* @Test
-    public void testLoginUserNotFound() throws Exception {
-        String username = "nonexistent";
-        String password = "wrongpassword";
-        String errorMessage = "User not found";
-
-        doThrow(new UserNotFoundException(errorMessage)).when(userService).login(username, password);
-
-        mockMvc.perform(post("/login")
-                       .param("username", username)
-                       .param("password", password))
-               .andExpect(status().isOk())
-               .andExpect(view().name("login"))
-               .andExpect(model().attributeExists("user"))
-               .andExpect(model().attribute("errorMessage", errorMessage));
-
-        verify(userService, times(1)).login(username, password);
-    }*/
-
+   
  
    
 
