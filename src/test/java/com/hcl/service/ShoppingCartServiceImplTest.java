@@ -6,7 +6,7 @@ import com.hcl.entity.User;
 import com.hcl.exception.BookNotFoundException;
 import com.hcl.exception.CartItemNotFoundException;
 import com.hcl.exception.InsufficientStockException;
-import com.hcl.exception.UserNotFoundException;
+
 import com.hcl.repository.BookRepository;
 import com.hcl.repository.CartItemRepository;
 import com.hcl.repository.UserRepository;
