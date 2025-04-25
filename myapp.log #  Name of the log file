@@ -1,0 +1,5 @@
+2025-04-25 12:41:35.630 [main] INFO  c.h.BookstoreEshoppingWebApplicationTests - Starting BookstoreEshoppingWebApplicationTests using Java 17.0.13 with PID 5628 (started by deepshikha.vishw in C:\Users\deepshikha.vishw\OneDrive - HCL TECHNOLOGIES LIMITED\Desktop\hcl\springboot\capstone\final\bookstore_main)
+2025-04-25 12:41:35.640 [main] DEBUG c.h.BookstoreEshoppingWebApplicationTests - Running with Spring Boot v3.4.4, Spring v6.2.5
+2025-04-25 12:41:35.645 [main] INFO  c.h.BookstoreEshoppingWebApplicationTests - No active profile set, falling back to 1 default profile: "default"
+2025-04-25 12:41:41.815 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-04-25 12:41:42.597 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 735 ms. Found 5 JPA repository interfaces.
