@@ -21,16 +21,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PaymentController.class)
 public class PaymentControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	 @Autowired
+	    private MockMvc mockMvc;
 
-    @MockBean
-    private ShoppingCartService shoppingCartService;
+	    @MockBean
+	    private ShoppingCartService shoppingCartService;
 
-    @Test
-    public void testShowPaymentPage_UnauthenticatedUser() throws Exception {
-        // Act and Assert
-        mockMvc.perform(get("/payment"))
-               .andExpect(status().isUnauthorized()); // Or 302 if redirected to login
-    }
+	    @Test
+	    public void testShowPaymentPage_UnauthenticatedUser() throws Exception {
+	        // Act and Assert
+	        mockMvc.perform(get("/payment"))
+	               .andExpect(status().isUnauthorized()); // Expect 401 because getCurrentUserId throws an exception
+	    }
 }
