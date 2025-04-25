@@ -42,7 +42,7 @@ public class AuthController {
 			userService.login(username, password);
 			logger.info("Login successful for user: {}", username);
             
-			return "redirect:/books"; // Redirect to the book list
+			return "redirect:/books"; 
 		} catch (UserNotFoundException | InvalidPasswordException e) {
 			logger.warn("Login failed for user: {}. Error: {}", username, e.getMessage());
             
@@ -80,7 +80,7 @@ public class AuthController {
 	@GetMapping("/access-denied")
 	public String accessDenied() {
 		logger.warn("Access denied attempt");
-		return "access_denied"; // Thymeleaf template name
+		return "access_denied"; 
 	}
 
 }
