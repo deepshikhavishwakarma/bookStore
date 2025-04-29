@@ -20,6 +20,8 @@ public class TestControllers {
 
     private static final Logger logger = LoggerFactory.getLogger(TestControllers.class);
 
+    private static final String USERNAME = "username"; 
+
     @Autowired
     private UserService userService;
 
@@ -34,13 +36,13 @@ public class TestControllers {
 
     // LOGIN
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
-        logger.info("Login attempt for user: {}", loginData.get("username"));
+    public ResponseEntity<String> login(@RequestBody Map<String, String> loginData) {
+        logger.info("Login attempt for user: {}", loginData.get(USERNAME));
         try {
-            userService.login(loginData.get("username"), loginData.get("password"));
+            userService.login(loginData.get(USERNAME), loginData.get("password"));
             return ResponseEntity.ok("Login successful");
         } catch (UserNotFoundException | InvalidPasswordException e) {
-            logger.warn("Login failed for user: {}", loginData.get("username"));
+            logger.warn("Login failed for user: {}", loginData.get(USERNAME));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
@@ -104,7 +106,7 @@ public class TestControllers {
             shoppingCartService.addItem(userId, bookId, quantity);
             return ResponseEntity.ok("Item added to cart");
         } catch (Exception e) {
-            logger.error("Error adding to cart:", e.getMessage());
+        	logger.error("Error adding to cart: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -131,7 +133,7 @@ public class TestControllers {
             orderService.placeOrder(userId, null, cardNumber, expiryDate, cvv);
             return ResponseEntity.ok("Order placed successfully");
         } catch (Exception e) {
-            logger.error("Error placing order:", e.getMessage());
+            logger.error("Error placing order:{}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order failed: " + e.getMessage());
         }
     }

@@ -1,12 +1,11 @@
 package com.hcl.service;
 
-import com.hcl.entity.Book;
-import com.hcl.entity.CartItem;
+
 import com.hcl.entity.Order;
-import com.hcl.entity.OrderItem;
+
 import com.hcl.entity.User;
 import com.hcl.exception.EmptyCartException;
-import com.hcl.exception.UserNotFoundException;
+
 import com.hcl.repository.BookRepository;
 import com.hcl.repository.CartItemRepository;
 import com.hcl.repository.OrderItemRepository;
@@ -17,12 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class OrderServiceImplTest {
+class OrderServiceImplTest {
 
 	@Mock
 	private OrderRepository orderRepository;
@@ -100,7 +96,7 @@ public class OrderServiceImplTest {
 		Long userId = 1L;
 		User user = new User();
 		user.setId(userId);
-		when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
+		when(cartItemRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
 
 		// When, Then
 		assertThrows(EmptyCartException.class, () -> orderService.processOrder(user));

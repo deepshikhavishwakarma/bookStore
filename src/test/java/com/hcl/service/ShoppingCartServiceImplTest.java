@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ShoppingCartServiceImplTest {
+class ShoppingCartServiceImplTest {
 
 	@Mock
 	private CartItemRepository cartItemRepository;
@@ -65,7 +65,7 @@ public class ShoppingCartServiceImplTest {
 		cartItem2.setUser(user);
 
 		List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
-		when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
+		when(cartItemRepository.findByUserId(userId)).thenReturn(cartItems);
 
 		// When
 		List<CartItem> result = shoppingCartService.getCartItems(userId);
@@ -74,21 +74,21 @@ public class ShoppingCartServiceImplTest {
 		assertEquals(2, result.size());
 		assertEquals(10L, result.get(0).getBook().getBookId());
 		assertEquals(20L, result.get(1).getBook().getBookId());
-		verify(cartItemRepository, times(1)).findByUser_id(userId);
+		verify(cartItemRepository, times(1)).findByUserId(userId);
 	}
 
 	@Test
 	void getCartItems_nonExistingUserId_returnsEmptyList() {
 		// Given
 		Long userId = 1L;
-		when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
+		when(cartItemRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
 
 		// When
 		List<CartItem> result = shoppingCartService.getCartItems(userId);
 
 		// Then
 		assertTrue(result.isEmpty());
-		verify(cartItemRepository, times(1)).findByUser_id(userId);
+		verify(cartItemRepository, times(1)).findByUserId(userId);
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class ShoppingCartServiceImplTest {
 
 		when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
 		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-		when(cartItemRepository.findByUser_idAndBook_BookId(userId, bookId)).thenReturn(Optional.empty());
+		when(cartItemRepository.findByUserIdAndBookBookId(userId, bookId)).thenReturn(Optional.empty());
 		when(cartItemRepository.save(any(CartItem.class))).thenReturn(new CartItem());
 
 		// When
@@ -333,7 +333,7 @@ public class ShoppingCartServiceImplTest {
 		cartItem2.setUser(user);
 
 		List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
-		when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
+		when(cartItemRepository.findByUserId(userId)).thenReturn(cartItems);
 		when(bookRepository.save(book1)).thenReturn(book1);
 		when(bookRepository.save(book2)).thenReturn(book2);
 
@@ -343,7 +343,7 @@ public class ShoppingCartServiceImplTest {
 		// Then
 		assertEquals(7, book1.getQuantity()); // Stock restored
 		assertEquals(4, book2.getQuantity()); // Stock restored
-		verify(cartItemRepository, times(1)).deleteByUser_id(userId);
+		verify(cartItemRepository, times(1)).deleteByUserId(userId);
 		verify(bookRepository, times(2)).save(any(Book.class));
 	}
 
@@ -351,13 +351,13 @@ public class ShoppingCartServiceImplTest {
 	void clearCart_nonExistingUserId_doesNothing() {
 		// Given
 		Long userId = 1L;
-		when(cartItemRepository.findByUser_id(userId)).thenReturn(Collections.emptyList());
+		when(cartItemRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
 
 		// When
 		shoppingCartService.clearCart(userId);
 
 		// Then
-		verify(cartItemRepository, times(1)).deleteByUser_id(userId);
+		verify(cartItemRepository, times(1)).deleteByUserId(userId);
 		verify(bookRepository, never()).save(any());
 	}
 
@@ -385,7 +385,7 @@ public class ShoppingCartServiceImplTest {
 		cartItem2.setUser(user);
 
 		List<CartItem> cartItems = Arrays.asList(cartItem1, cartItem2);
-		when(cartItemRepository.findByUser_id(userId)).thenReturn(cartItems);
+		when(cartItemRepository.findByUserId(userId)).thenReturn(cartItems);
 
 		// When
 		shoppingCartService.clearCartAfterPayment(userId, 123L);

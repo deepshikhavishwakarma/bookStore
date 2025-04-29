@@ -2,15 +2,12 @@ package com.hcl.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.hcl.repository.CartItemRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.hcl.entity.Book;
 import com.hcl.exception.BookNotFoundException;
 import com.hcl.repository.BookRepository;
@@ -28,7 +25,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getAllBooks() {
         logger.info("Getting all available books");
-        return bookRepository.findAll().stream().filter(book -> book.getQuantity() > 0).collect(Collectors.toList());
+        return bookRepository.findAll().stream().filter(book -> book.getQuantity() > 0).toList();
     }
 
     @Override
@@ -48,9 +45,9 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteBookById(Long id) {
         logger.info("Deleting book by ID: {}", id);
-        Book book = bookRepository.findById(id)
+        bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + id));
-        cartItemRepository.deleteByBook_BookId(id);
+        cartItemRepository.deleteByBookBookId(id);
         bookRepository.deleteById(id);
     }
 

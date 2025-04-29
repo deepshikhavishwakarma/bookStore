@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class BookServiceImplTest {
+class BookServiceImplTest {
 
 	@Mock
 	private BookRepository bookRepository;
@@ -92,14 +92,14 @@ public class BookServiceImplTest {
 		Book bookToDelete = new Book("ToDelete", "Author", 2, 10.00);
 		when(bookRepository.findById(bookId)).thenReturn(Optional.of(bookToDelete));
 		doNothing().when(bookRepository).deleteById(bookId);
-		doNothing().when(cartItemRepository).deleteByBook_BookId(bookId);
+		doNothing().when(cartItemRepository).deleteByBookBookId(bookId);
 
 		// Act
 		bookService.deleteBookById(bookId);
 
 		// Assert
 		verify(bookRepository, times(1)).findById(bookId);
-		verify(cartItemRepository, times(1)).deleteByBook_BookId(bookId);
+		verify(cartItemRepository, times(1)).deleteByBookBookId(bookId);
 		verify(bookRepository, times(1)).deleteById(bookId);
 	}
 
@@ -112,7 +112,7 @@ public class BookServiceImplTest {
 		// Act and Assert
 		assertThrows(BookNotFoundException.class, () -> bookService.deleteBookById(bookId));
 		verify(bookRepository, times(1)).findById(bookId);
-		verify(cartItemRepository, never()).deleteByBook_BookId(anyLong());
+		verify(cartItemRepository, never()).deleteByBookBookId(anyLong());
 		verify(bookRepository, never()).deleteById(anyLong());
 	}
 

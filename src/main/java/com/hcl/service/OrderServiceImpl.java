@@ -15,7 +15,10 @@ import com.hcl.entity.CartItem;
 import com.hcl.entity.Order;
 import com.hcl.entity.OrderItem;
 import com.hcl.entity.User;
+import com.hcl.exception.BookNotFoundException;
 import com.hcl.exception.EmptyCartException;
+import com.hcl.exception.InsufficientStockException;
+import com.hcl.exception.OrderNotFoundException;
 import com.hcl.exception.UserNotFoundException;
 import com.hcl.repository.BookRepository;
 import com.hcl.repository.CartItemRepository;
@@ -83,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
             Book book = bookRepository.findById(bookId)
                     .orElseThrow(() -> {
                         logger.error("Book not found with ID: {}", bookId);
-                        return new RuntimeException("Book not found: " + bookId);
+                        return new BookNotFoundException("Book not found: " + bookId);
                     });
 
             if (book.getQuantity() >= quantity) {
@@ -103,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
                 logger.info("Order item saved: book '{}', quantity {}", book.getBookName(), quantity);
             } else {
                 logger.error("Insufficient stock for book '{}'. Requested: {}, Available: {}", book.getBookName(), quantity, book.getQuantity());
-                throw new RuntimeException("Insufficient stock for " + book.getBookName());
+                throw new InsufficientStockException("Insufficient stock for " + book.getBookName());
             }
         }
 
@@ -119,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> {
                     logger.warn("Order not found with ID: {}", orderId);
-                    return new RuntimeException("Order not found with ID: " + orderId);
+                    return new OrderNotFoundException("Order not found with ID: " + orderId);
                 });
     }
 
@@ -140,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order processOrder(User user) {
         logger.info("Processing order for user: {}", user.getUsername());
-        List<CartItem> cartItems = cartItemRepository.findByUser_id(user.getId());
+        List<CartItem> cartItems = cartItemRepository.findByUserId(user.getId());
 
         if (cartItems.isEmpty()) {
             logger.warn("Cart is empty for user: {}", user.getUsername());
@@ -168,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
             Book book = bookRepository.findById(bookId)
                     .orElseThrow(() -> {
                         logger.error("Book not found with ID: {}", bookId);
-                        return new RuntimeException("Book not found: " + bookId);
+                        return new BookNotFoundException("Book not found: " + bookId);
                     });
 
             if (book.getQuantity() >= quantity) {
@@ -188,7 +191,7 @@ public class OrderServiceImpl implements OrderService {
                 logger.info("Order item saved: book '{}', quantity {}", book.getBookName(), quantity);
             } else {
                 logger.error("Insufficient stock for book '{}'. Requested: {}, Available: {}", book.getBookName(), quantity, book.getQuantity());
-                throw new RuntimeException("Insufficient stock for " + book.getBookName());
+                throw new InsufficientStockException("Insufficient stock for " + book.getBookName());
             }
         }
 
@@ -206,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getOrders(Long currentUserId) {
         logger.info("Fetching orders for user ID: {}", currentUserId);
-        List<Order> orders = orderRepository.findByUser_id(currentUserId);
+        List<Order> orders = orderRepository.findByUserId(currentUserId);
         logger.info("Retrieved {} orders for user ID: {}", orders.size(), currentUserId);
         return orders;
     }

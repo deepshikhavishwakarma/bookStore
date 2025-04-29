@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hcl.config.CustomUserDetails;
-
+import com.hcl.exception.UserNotAuthenticatedException;
 import com.hcl.service.ShoppingCartService;
 
 @Controller
@@ -46,6 +46,6 @@ public class PaymentController {
 			return ((CustomUserDetails) authentication.getPrincipal()).getId();
 		}
 		logger.warn("User not authenticated in getCurrentUserId()"); 
-        throw new RuntimeException("User not authenticated");
+        throw new UserNotAuthenticatedException("User not authenticated");
 	}
 }

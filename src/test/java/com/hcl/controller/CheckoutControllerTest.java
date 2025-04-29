@@ -22,7 +22,7 @@ import com.hcl.entity.CartItem;
 import com.hcl.entity.User;
 import com.hcl.service.ShoppingCartService;
 
-public class CheckoutControllerTest {
+class CheckoutControllerTest {
 
     @InjectMocks
     private CheckoutController checkoutController;

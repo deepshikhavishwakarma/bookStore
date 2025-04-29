@@ -35,7 +35,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public List<CartItem> getCartItems(Long userId) {
         logger.info("Getting cart items for user ID: {}", userId);
-        return cartItemRepository.findByUser_id(userId);
+        return cartItemRepository.findByUserId(userId);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         bookRepository.save(book);
         logger.info("Decreased stock for book ID {}. Remaining quantity: {}", bookId, book.getQuantity());
 
-        Optional<CartItem> existingItem = cartItemRepository.findByUser_idAndBook_BookId(userId, bookId);
+        Optional<CartItem> existingItem = cartItemRepository.findByUserIdAndBookBookId(userId, bookId);
 
         if (existingItem.isPresent()) {
             CartItem cartItem = existingItem.get();
@@ -145,7 +145,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public void clearCart(Long userId) {
         logger.info("Clearing cart for user ID: {}", userId);
-        List<CartItem> cartItems = cartItemRepository.findByUser_id(userId);
+        List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
 
         for (CartItem item : cartItems) {
             Book book = item.getBook();
@@ -154,7 +154,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             logger.info("Increased stock for book ID {} by {} while clearing cart for user ID {}", book.getBookId(), item.getQuantity(), userId);
         }
 
-        cartItemRepository.deleteByUser_id(userId);
+        cartItemRepository.deleteByUserId(userId);
         logger.info("Cart cleared for user ID: {}", userId);
     }
 
@@ -162,7 +162,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public void clearCartAfterPayment(Long userId, Long orderId) {
         logger.info("Clearing cart for user ID {} after payment for order ID {}", userId, orderId);
-        List<CartItem> cartItems = cartItemRepository.findByUser_id(userId);
+        List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         cartItemRepository.deleteAll(cartItems);
         logger.info("Cart cleared for user ID {} after payment for order ID {}", userId, orderId);
     }
@@ -170,7 +170,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public double getTotalPrice(Long userId) {
         logger.info("Calculating total price for cart of user ID: {}", userId);
-        double totalPrice = cartItemRepository.findByUser_id(userId)
+        double totalPrice = cartItemRepository.findByUserId(userId)
                 .stream()
                 .mapToDouble(item -> item.getBook().getPrice() * item.getQuantity())
                 .sum();

@@ -9,5 +9,5 @@ import com.hcl.entity.Order;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	
-	List<Order> findByUser_id(Long id);
+	List<Order> findByUserId(Long id);
 }

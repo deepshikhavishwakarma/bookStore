@@ -19,7 +19,7 @@ import com.hcl.exception.UserAlreadyExistsException;
 import com.hcl.exception.UserNotFoundException;
 import com.hcl.service.UserService;
 
-public class AuthControllerTest {
+class AuthControllerTest {
 
     private MockMvc mockMvc;
 
@@ -36,7 +36,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testLoginSuccess() throws Exception {
+    void testLoginSuccess() throws Exception {
         String username = "testuser";
         String password = "password";
 
@@ -56,7 +56,7 @@ public class AuthControllerTest {
    
 
     @Test
-    public void testRegisterUserSuccess() throws Exception {
+    void testRegisterUserSuccess() throws Exception {
         User user = new User();
         user.setUsername("newuser");
         user.setPassword("newpassword");
@@ -73,7 +73,7 @@ public class AuthControllerTest {
 
 
     @Test
-    public void testAccessDenied() throws Exception {
+    void testAccessDenied() throws Exception {
         mockMvc.perform(get("/access-denied"))
                .andExpect(status().isOk())
                .andExpect(view().name("access_denied"));

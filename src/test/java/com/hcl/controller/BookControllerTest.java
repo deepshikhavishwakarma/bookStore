@@ -18,40 +18,56 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class BookControllerTest {
+class BookControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
     @MockBean private BookService bookService;
+    private static final String REDIRECT_BOOKS = "redirect:/books";
 
     @Test
     @WithMockUser
     void listBooks_shouldReturnBookListAndBookListView() throws Exception {
-      
+    	List<Book> books = Arrays.asList(new Book("Book 1", "Author 1", 5, 10.0),
+                new Book("Book 2", "Author 2", 3, 15.0));
+when(bookService.getAllBooks()).thenReturn(books);
+
+// Act & Assert
+mockMvc.perform(get("/books"))
+.andExpect(status().isOk())
+.andExpect(model().attribute("listBooks", books))
+.andExpect(view().name("book_list"));
+verify(bookService, times(1)).getAllBooks();
+
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void showNewBookForm_shouldReturnNewBookFormView() throws Exception {
-       
+    	mockMvc.perform(get("/books/showNewForm"))
+        .andExpect(status().isOk())
+        .andExpect(model().attributeExists("book"))
+        .andExpect(view().name("new_book"));
+
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void showNewBookForm_asUser_shouldBeForbidden() throws Exception {
-      
-    }
+    	mockMvc.perform(get("/books/showNewForm"))
+        .andExpect(status().isForbidden());
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void saveBook_shouldSaveBookAndRedirectToList() throws Exception {
-      
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void saveBook_asUser_shouldBeForbidden() throws Exception {
-       
+    	 Book newBook = new Book("New Book", "New Author", 2, 20.0);
+         mockMvc.perform(post("/books/save")
+                        .flashAttr("book", newBook))
+                .andExpect(status().isForbidden());
+         verify(bookService, never()).saveBook(any(Book.class));
+    
     }
 
     @Test
@@ -80,42 +96,73 @@ public class BookControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     void showFormForUpdate_asUser_shouldBeForbidden() throws Exception {
-    
+    	 mockMvc.perform(get("/books/showFormForUpdate/{id}", 1L))
+         .andExpect(status().isForbidden());
+  verify(bookService, never()).getBookById(anyLong());
+
     }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void updateBook_shouldUpdateBookAndRedirectToList() throws Exception {
-       
-    }
-
+	
     @Test
     @WithMockUser(roles = "USER")
     void updateBook_asUser_shouldBeForbidden() throws Exception {
-       
+    	 Book updatedBook = new Book("Updated Book", "Updated Author", 7, 22.0);
+         mockMvc.perform(post("/books/update")
+                        .flashAttr("book", updatedBook))
+                .andExpect(status().isForbidden());
+         verify(bookService, never()).saveBook(any(Book.class));
+     
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void deleteBook_shouldDeleteBookAndRedirectToList() throws Exception {
-        
+    	 Long bookIdToDelete = 1L;
+         mockMvc.perform(get("/books/delete/{id}", bookIdToDelete))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/books"));
+         verify(bookService, times(1)).deleteBookById(bookIdToDelete);
+    
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void deleteBook_asUser_shouldBeForbidden() throws Exception {
-      
+    	 mockMvc.perform(get("/books/delete/{id}", 1L))
+         .andExpect(status().isForbidden());
+  verify(bookService, never()).deleteBookById(anyLong());
+
     }
 
     @Test
     @WithMockUser
     void searchBooks_shouldReturnSearchResultsAndBookListView() throws Exception {
-      
+    	 String keyword = "test";
+         List<Book> searchResults = Arrays.asList(new Book("Test Book", "Author", 2, 10.0));
+         when(bookService.searchBooks(keyword)).thenReturn(searchResults);
+
+         mockMvc.perform(get("/books/search")
+                        .param("keyword", keyword))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("listBooks", searchResults))
+                .andExpect(view().name("book_list"));
+         verify(bookService, times(1)).searchBooks(keyword);
+    
     }
 
     @Test
     @WithMockUser
     void searchBooks_emptyKeyword_shouldReturnAllBooks() throws Exception {
-       
+    	 List<Book> allBooks = Arrays.asList(new Book("Book 1", "Author 1", 5, 10.0),
+                 new Book("Book 2", "Author 2", 3, 15.0));
+when(bookService.searchBooks("")).thenReturn(allBooks);
+
+mockMvc.perform(get("/books/search")
+.param("keyword", ""))
+.andExpect(status().isOk())
+.andExpect(model().attribute("listBooks", allBooks))
+.andExpect(view().name("book_list"));
+verify(bookService, times(1)).searchBooks("");
+
     }
 }

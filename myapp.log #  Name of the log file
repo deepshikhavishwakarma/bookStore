@@ -1,0 +1,7 @@
+2025-04-29 09:26:20.857 [HikariPool-5 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-5 - Thread starvation or clock leap detected (housekeeper delta=14h15m35s90ms860µs200ns).
+2025-04-29 09:27:21.635 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 12 class path changes (0 additions, 12 deletions, 0 modifications)
+2025-04-29 09:27:22.076 [Thread-22] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-04-29 09:27:29.895 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-04-29 09:27:29.986 [Thread-22] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-04-29 09:27:30.102 [Thread-22] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Shutdown initiated...
+2025-04-29 09:27:30.222 [Thread-22] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Shutdown completed.

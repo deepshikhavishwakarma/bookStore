@@ -32,7 +32,8 @@ import jakarta.servlet.http.HttpSession;
 public class OrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
-
+    private static final String ERROR_ATTRIBUTE = "error"; 
+    private static final String REDIRECT_ORDERS = "redirect:/orders";
     @Autowired
     private OrderService orderService;
 
@@ -49,14 +50,14 @@ public class OrderController {
         Long userId = getCurrentUserId();
         if (userId == null) {
             logger.warn("User not authenticated, redirecting to login");
-            redirectAttributes.addFlashAttribute("error", "User is not authenticated.");
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "User is not authenticated.");
             return "redirect:/login";
         }
 
         List<CartItem> cartItems = shoppingCartService.getCartItems(userId);
         if (cartItems.isEmpty()) {
             logger.warn("Cart is empty for user ID: {}", userId);
-            redirectAttributes.addFlashAttribute("error", "Your cart is empty.");
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Your cart is empty.");
             return "redirect:/cart";
         }
 
@@ -72,7 +73,7 @@ public class OrderController {
 
         } catch (Exception e) {
             logger.error("Exception caught while placing order for user ID: {}", userId, e);
-            redirectAttributes.addFlashAttribute("error", "Failed to place order: " + e.getMessage());
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Failed to place order: " + e.getMessage());
             logger.info("Redirecting back to checkout due to error");
             return "redirect:/checkout";
         }
@@ -96,7 +97,7 @@ public class OrderController {
         Long userId = getCurrentUserId();
         if (userId == null) {
             logger.warn("User not authenticated, redirecting to login");
-            redirectAttributes.addFlashAttribute("error", "User is not authenticated.");
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "User is not authenticated.");
             return "redirect:/login";
         }
 
@@ -104,26 +105,26 @@ public class OrderController {
         Order order = orderService.findById(orderId);
         if (order == null) {
             logger.warn("Order with ID: {} not found", orderId);
-            redirectAttributes.addFlashAttribute("error", "Order not found.");
-            return "redirect:/orders";
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Order not found.");
+            return REDIRECT_ORDERS;
         }
 
         if (!order.getUser().getId().equals(userId)) {
             logger.warn("User ID: {} not authorized to cancel order ID: {}", userId, orderId);
-            redirectAttributes.addFlashAttribute("error", "You are not authorized to cancel this order.");
-            return "redirect:/orders";
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "You are not authorized to cancel this order.");
+            return REDIRECT_ORDERS;
         }
 
         if (!order.getStatus().equals("PLACED")) {
             logger.warn("Order ID: {} has status '{}', only 'PLACED' orders can be cancelled", orderId, order.getStatus());
-            redirectAttributes.addFlashAttribute("error", "Only placed orders can be cancelled.");
-            return "redirect:/orders";
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Only placed orders can be cancelled.");
+            return REDIRECT_ORDERS;
         }
 
         if (ChronoUnit.DAYS.between(order.getOrderDate(), LocalDate.now()) > 7) {
             logger.warn("Cancellation period expired for order ID: {}", orderId);
-            redirectAttributes.addFlashAttribute("error", "Cancellation period (7 days) has expired.");
-            return "redirect:/orders";
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Cancellation period (7 days) has expired.");
+            return REDIRECT_ORDERS;
         }
 
         try {
@@ -134,10 +135,10 @@ public class OrderController {
             redirectAttributes.addFlashAttribute("message", "Order cancelled and items returned to cart.");
         } catch (Exception e) {
             logger.error("Failed to cancel order ID: {} for user ID: {}", orderId, userId, e);
-            redirectAttributes.addFlashAttribute("error", "Failed to cancel order: " + e.getMessage());
+            redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Failed to cancel order: " + e.getMessage());
         }
 
-        return "redirect:/orders";
+        return REDIRECT_ORDERS;
     }
 
     @GetMapping("/confirmation/{orderId}")

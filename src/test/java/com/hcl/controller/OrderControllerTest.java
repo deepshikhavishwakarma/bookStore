@@ -35,7 +35,7 @@ import com.hcl.service.ShoppingCartService;
 
 import jakarta.servlet.http.HttpSession;
 
-public class OrderControllerTest {
+class OrderControllerTest {
 
     @InjectMocks
     private OrderController orderController;

@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PaymentController.class)
-public class PaymentControllerTest {
+class PaymentControllerTest {
 
 	 @Autowired
 	    private MockMvc mockMvc;
@@ -30,7 +30,7 @@ public class PaymentControllerTest {
 
 	    @Test
 	    @WithAnonymousUser
-	    public void testShowPaymentPage_UnauthenticatedUser() throws Exception {
+	    void testShowPaymentPage_UnauthenticatedUser() throws Exception {
 	        // Act and Assert
 	        mockMvc.perform(get("/payment"))
 	               .andExpect(status().isUnauthorized()); 

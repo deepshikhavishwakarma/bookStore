@@ -22,7 +22,9 @@ import com.hcl.service.BookService;
 public class BookController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookController.class);
+    private static final String REDIRECT_BOOKS = "redirect:/books"; // Define the constant
 
+    
     @Autowired
     private BookService bookService;
 
@@ -50,7 +52,7 @@ public class BookController {
         logger.info("Entering saveBook method with book details: {}", book);
         bookService.saveBook(book);
         logger.info("Exiting saveBook method, book saved successfully");
-        return "redirect:/books";
+        return REDIRECT_BOOKS;
     }
 
     @GetMapping("/showFormForUpdate/{id}")
@@ -69,7 +71,7 @@ public class BookController {
         logger.info("Entering updateBook method with book details: {}", book);
         bookService.saveBook(book); // Assuming your saveBook handles both create and update
         logger.info("Exiting updateBook method, book updated successfully");
-        return "redirect:/books";
+        return REDIRECT_BOOKS;
     }
 
     @GetMapping("/delete/{id}")
@@ -78,7 +80,7 @@ public class BookController {
         logger.warn("Entering deleteBook method for book ID: {}", id);
         bookService.deleteBookById(id);
         logger.info("Exiting deleteBook method, book deleted successfully");
-        return "redirect:/books";
+        return REDIRECT_BOOKS;
     }
 
     @GetMapping("/search")

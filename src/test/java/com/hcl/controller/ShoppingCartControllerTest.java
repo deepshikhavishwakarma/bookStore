@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ShoppingCartControllerTest {
+class ShoppingCartControllerTest {
 
 	private MockMvc mockMvc;
 
@@ -51,7 +51,7 @@ public class ShoppingCartControllerTest {
 	private final Long testUserId = 1L;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		MockitoAnnotations.openMocks(this);
 		mockMvc = MockMvcBuilders.standaloneSetup(shoppingCartController)
 				.setViewResolvers(new InternalResourceViewResolver("", "")).build();
@@ -63,7 +63,7 @@ public class ShoppingCartControllerTest {
 	}
 
 	@Test
-	public void testAddItem_AuthenticatedUser_Success() throws Exception {
+	void testAddItem_AuthenticatedUser_Success() throws Exception {
 		Long bookId = 2L;
 		int quantity = 1;
 		Book mockBook = new Book();
@@ -81,7 +81,7 @@ public class ShoppingCartControllerTest {
 	}
 
 	@Test
-	public void testAddItem_AuthenticatedUser_BookNotFound() throws Exception {
+	void testAddItem_AuthenticatedUser_BookNotFound() throws Exception {
 		Long bookId = 2L;
 		int quantity = 1;
 		when(bookService.getBookById(bookId)).thenThrow(new BookNotFoundException("Book not found"));
@@ -96,7 +96,7 @@ public class ShoppingCartControllerTest {
 	}
 
 	@Test
-	public void testUpdateItem_AuthenticatedUser() throws Exception {
+	void testUpdateItem_AuthenticatedUser() throws Exception {
 		Long itemId = 3L;
 		int quantity = 2;
 		doNothing().when(shoppingCartService).updateItemQuantity(testUserId, itemId, quantity);
@@ -108,7 +108,7 @@ public class ShoppingCartControllerTest {
 	}
 
 	@Test
-	public void testRemoveItem_AuthenticatedUser() throws Exception {
+	void testRemoveItem_AuthenticatedUser() throws Exception {
 		Long itemId = 3L;
 		doNothing().when(shoppingCartService).removeItem(testUserId, itemId);
 
@@ -119,7 +119,7 @@ public class ShoppingCartControllerTest {
 	}
 
 	@Test
-	public void testClearCart_AuthenticatedUser() throws Exception {
+	void testClearCart_AuthenticatedUser() throws Exception {
 		doNothing().when(shoppingCartService).clearCart(testUserId);
 
 		mockMvc.perform(get("/cart/clear")).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/cart"));
@@ -128,7 +128,7 @@ public class ShoppingCartControllerTest {
 	}
 
 	@Test
-	public void testClearCartFrontend_AuthenticatedUser() throws Exception {
+	void testClearCartFrontend_AuthenticatedUser() throws Exception {
 		doNothing().when(shoppingCartService).clearCart(testUserId);
 
 		mockMvc.perform(post("/cart/clear-frontend")).andExpect(status().isOk())
